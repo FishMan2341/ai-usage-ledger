@@ -1,0 +1,18 @@
+{
+  "days": 90,
+  "subscriptions": [
+    { "provider": "anthropic", "name": "Claude Max", "monthlyUsd": 100, "since": "2026-06-01" },
+    { "provider": "openai", "name": "ChatGPT Plus", "monthlyUsd": 20 }
+  ],
+  "billing": {
+    "claude-code": "subscription",
+    "codex": "subscription"
+  },
+  "disabledSources": [],
+  "pricing": {
+    "my-custom-model": { "provider": "openai", "tier": "mid", "input": 1.0, "cacheWrite": 1.0, "cacheRead": 0.1, "output": 4.0, "basis": "My negotiated rate" }
+  },
+  "impact": {
+    "gridGramsCo2ePerKWh": 370
+  }
+}

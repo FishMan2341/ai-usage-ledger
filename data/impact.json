@@ -1,0 +1,23 @@
+{
+  "_note": "Energy is estimated per token at the server (Wh per 1,000 tokens), then multiplied by data-center overhead (PUE). Providers do not publish per-model figures for these models, so treat the result as an order-of-magnitude estimate. The dashboard shows a low-high band using the uncertainty multipliers.",
+  "whPer1kTokens": {
+    "frontier": { "input": 0.10,  "cached": 0.010,  "output": 1.00 },
+    "mid":      { "input": 0.04,  "cached": 0.004,  "output": 0.40 },
+    "small":    { "input": 0.015, "cached": 0.0015, "output": 0.15 }
+  },
+  "pue": 1.2,
+  "gridGramsCo2ePerKWh": 370,
+  "waterLitresPerKWh": 1.9,
+  "uncertainty": { "low": 0.3, "high": 3.0 },
+  "equivalents": {
+    "gramsCo2ePerCarKm": 170,
+    "whPerPhoneCharge": 15,
+    "whPerHourOfLaptop": 50
+  },
+  "references": [
+    { "label": "Google (Aug 2025): median Gemini text prompt uses about 0.24 Wh, 0.03 gCO2e and 0.26 mL water", "url": "https://cloud.google.com/blog/products/infrastructure/measuring-the-environmental-impact-of-ai-inference" },
+    { "label": "Epoch AI (2025): a typical GPT-4o query uses about 0.3 Wh", "url": "https://epoch.ai/gradient-updates/how-much-energy-does-chatgpt-use" },
+    { "label": "Jegham et al. (2025): How Hungry is AI? Per-query energy, water and carbon for 30 models", "url": "https://arxiv.org/abs/2505.09598" },
+    { "label": "IEA: average global grid carbon intensity and data-center PUE", "url": "https://www.iea.org/reports/energy-and-ai" }
+  ]
+}
