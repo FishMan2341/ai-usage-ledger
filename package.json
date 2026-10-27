@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node bin/cli.js serve --open",
     "status": "node bin/cli.js status",
-    "test": "node --test test/sources.test.js"
+    "test": "node --test test/sources.test.js test/analysis.test.js test/habits.test.js test/connect.test.js"
   },
   "files": ["bin", "src", "public", "data", "README.md", "LICENSE"],
   "engines": { "node": ">=18.17" },

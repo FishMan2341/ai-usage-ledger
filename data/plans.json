@@ -1,0 +1,26 @@
+{
+  "_note": "Monthly fees for consumer plans. Providers do not publish plan limits as token counts, so weekly capacity is an editable estimate: monthly fee x valueMultiple, in API-equivalent dollars, raised to your own best observed week. Override per provider in the dashboard.",
+  "checked": "2026-10-27",
+  "valueMultiple": 10,
+  "providers": {
+    "anthropic": [
+      { "id": "none",  "label": "No plan",            "monthlyUsd": 0 },
+      { "id": "pro",   "label": "Claude Pro",         "monthlyUsd": 20 },
+      { "id": "max5",  "label": "Claude Max 5x",      "monthlyUsd": 100 },
+      { "id": "max20", "label": "Claude Max 20x",     "monthlyUsd": 200 },
+      { "id": "api",   "label": "API only (pay per use)", "monthlyUsd": 0, "metered": true }
+    ],
+    "openai": [
+      { "id": "none", "label": "No plan",             "monthlyUsd": 0 },
+      { "id": "plus", "label": "ChatGPT Plus",        "monthlyUsd": 20 },
+      { "id": "pro",  "label": "ChatGPT Pro",         "monthlyUsd": 200 },
+      { "id": "api",  "label": "API only (pay per use)", "monthlyUsd": 0, "metered": true }
+    ],
+    "google": [
+      { "id": "none",  "label": "No plan",            "monthlyUsd": 0 },
+      { "id": "pro",   "label": "Google AI Pro",      "monthlyUsd": 20 },
+      { "id": "ultra", "label": "Google AI Ultra",    "monthlyUsd": 250 },
+      { "id": "api",   "label": "API only (pay per use)", "monthlyUsd": 0, "metered": true }
+    ]
+  }
+}

@@ -9,6 +9,12 @@ export function localDay(ts) {
   return d.toLocaleDateString('en-CA');
 }
 
+// Local hour of day (0-23), used to find when the user is active and when the machine sits idle.
+export function localHour(ts) {
+  const d = new Date(ts);
+  return Number.isNaN(d.getTime()) ? null : d.getHours();
+}
+
 export function utcDay(ts) {
   const d = typeof ts === 'number' ? new Date(ts * 1000) : new Date(ts);
   return Number.isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10);
@@ -47,7 +53,7 @@ const SUM_FIELDS = ['requests', 'input', 'cacheWrite', 'cacheRead', 'output'];
 export function rollup(rows) {
   const map = new Map();
   for (const r of rows) {
-    const key = [r.source, r.day, r.model, r.category, r.project].join('\u0000');
+    const key = [r.source, r.day, r.hour, r.model, r.category, r.project].join('\u0000');
     const cur = map.get(key);
     if (!cur) { map.set(key, { ...r }); continue; }
     for (const f of SUM_FIELDS) cur[f] += r[f] || 0;

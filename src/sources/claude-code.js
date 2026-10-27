@@ -1,14 +1,21 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { walk, readLines, localDay, num, rollup, emptyRow } from '../util.js';
+import { walk, readLines, localDay, localHour, num, rollup, emptyRow } from '../util.js';
 import { categorize, isHumanText } from '../categorize.js';
+import { newStats, noteHuman, noteContext, finishStats } from '../stats.js';
 
 export const id = 'claude-code';
 export const label = 'Claude Code (local logs)';
 
 export function defaultRoot() {
   return process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
+}
+
+function rawText(content) {
+  if (typeof content === 'string') return content.trim();
+  if (Array.isArray(content)) for (const c of content) if (c?.type === 'text' && typeof c.text === 'string') return c.text.trim();
+  return '';
 }
 
 function firstText(content) {
@@ -43,14 +50,15 @@ export async function read({ root = defaultRoot(), billing } = {}) {
       if (!sid) continue;
       let s = sessions.get(sid);
       if (!s) {
-        s = { id: sid, source: id, start: rec.timestamp, prompt: null, project: path.basename(rec.cwd || '') || 'unknown', models: {} };
+        s = { id: sid, source: id, start: rec.timestamp, prompt: null, project: path.basename(rec.cwd || '') || 'unknown', models: {}, stats: newStats() };
         sessions.set(sid, s);
       }
       if (rec.timestamp && rec.timestamp < s.start) s.start = rec.timestamp;
       if (rec.cwd && s.project === 'unknown') s.project = path.basename(rec.cwd);
-      if (rec.type === 'user' && !rec.isSidechain && !s.prompt) {
+      if (rec.type === 'user' && !rec.isSidechain) {
         const t = firstText(rec.message?.content);
-        if (isHumanText(t)) s.prompt = t;
+        if (isHumanText(t)) { if (!s.prompt) s.prompt = t; noteHuman(s.stats, t, rec.timestamp); }
+        else if (rawText(rec.message?.content).startsWith('[Request interrupted')) s.stats.interrupts++;
       }
       const msg = rec.message;
       if (rec.type !== 'assistant' || !msg?.usage || !msg.model || msg.model === '<synthetic>') continue;
@@ -59,19 +67,20 @@ export async function read({ root = defaultRoot(), billing } = {}) {
       if (seen.has(key)) continue;
       seen.add(key);
       const u = msg.usage;
+      noteContext(s.stats, num(u.input_tokens) + num(u.cache_creation_input_tokens) + num(u.cache_read_input_tokens));
       const model = msg.model.replace(/\[.*\]$/, '');
       s.models[model] = (s.models[model] || 0) + 1;
-      raw.push({ sid, day: localDay(rec.timestamp), model, u });
+      raw.push({ sid, day: localDay(rec.timestamp), hour: localHour(rec.timestamp), model, u });
     }
   }
 
   for (const s of sessions.values()) s.category = categorize(s.prompt);
 
-  const rows = raw.map(({ sid, day, model, u }) => {
+  const rows = raw.map(({ sid, day, hour, model, u }) => {
     const s = sessions.get(sid);
     return emptyRow({
       source: id, provider: 'anthropic', app: 'Claude', billing: bill,
-      day, model, category: s.category, project: s.project,
+      day, hour, model, category: s.category, project: s.project,
       requests: 1,
       input: num(u.input_tokens),
       cacheWrite: num(u.cache_creation_input_tokens),
@@ -82,8 +91,8 @@ export async function read({ root = defaultRoot(), billing } = {}) {
 
   const sessionList = [...sessions.values()]
     .filter((s) => Object.keys(s.models).length)
-    .map(({ id: sid, source, start, category, project, models }) => ({
-      id: sid, source, day: localDay(start), category, project,
+    .map(({ id: sid, source, start, category, project, models, stats }) => ({
+      id: sid, source, day: localDay(start), category, project, stats: finishStats(stats, start),
       model: Object.entries(models).sort((a, b) => b[1] - a[1])[0][0],
     }));
 

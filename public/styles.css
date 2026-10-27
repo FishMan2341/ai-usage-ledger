@@ -125,3 +125,5 @@ td .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; ba
 @media (prefers-reduced-motion: no-preference) {
   .hbar-track span, .cellbar { transition: width 300ms ease-out; }
 }
+
+a.btn { text-decoration: none; display: inline-flex; align-items: center; }

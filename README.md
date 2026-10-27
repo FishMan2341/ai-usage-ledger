@@ -26,6 +26,14 @@ It's for individual developers on Claude, ChatGPT or Gemini plans, and for small
 - **Methodology:** every rate and factor, the models priced by proxy, and links to references.
 - **CLI:** `status` to check connections and `json` to export everything for your own analysis.
 
+## Install with an agent
+
+Tell Claude Code, Codex or any coding agent:
+
+> Install https://github.com/FishMan2341/ai-usage-ledger and run it.
+
+The repo's `AGENTS.md` tells the agent what to do: check Node, run `npx --yes github:FishMan2341/ai-usage-ledger setup`, and report what was detected. Setup needs no keys, plans or paths.
+
 ## Quick start
 
 ```bash
@@ -35,6 +43,22 @@ npx github:FishMan2341/ai-usage-ledger --open
 Or clone the repo and run `npm start`. You need Node 18.17 or newer. Node 22.15+ can also read Codex's compressed session archives. There are no dependencies and no build step. It's plain JavaScript that Node runs directly.
 
 With no setup at all, it reads the local logs of any coding agents you've used. Add admin keys to include API usage and billing.
+
+## Value left on the table
+
+The home page answers a different question from the full breakdown: how much of your plan are you not using, and what could you run to use it.
+
+- **Chart:** the last 7 days, one line per provider plus a total line, in API-equivalent dollars or tokens.
+- **Value left on the table:** your average weekly use over the last 4 weeks against your plan's estimated weekly capacity.
+- **Suggestions:** overnight and off-hours jobs (tests, audits, docs, research briefs, drafts, design variations), picked from your top categories, your busiest project, and the hours your machine sits idle. They need no input and are rebuilt on every refresh, so they follow your current work. Each comes with a ready-to-run command (`claude -p`, `codex exec` or `gemini -p`) and a scheduling step for your OS.
+- **Sources:** providers are detected automatically and left out of the chart, rings and suggestions when there is no usage. Each can be rescanned on its own, and if something isn't found you can point at its log folder or paste an API key (saved to `~/.ai-usage-ledger/.env`, never sent back to the page).
+- **Tune the estimate (optional):** plan overrides, how often you hit limits, whether your computer is on overnight. Plans are detected from your Claude Code sign-in and Codex logs, so most people never touch it. Answers are saved in `~/.ai-usage-ledger/profile.json`.
+
+**Measured limits (Codex).** Codex writes how full each rate-limit window was into its session logs. The ledger divides what it priced in a weekly window by the reported percentage to get your plan's real capacity, takes the median of recent weeks, and shows the plan's current percentage and reset time. Rings marked *Measured* use this. Other providers don't log this, so they fall back to the estimate below.
+
+**Habits and tips.** On first launch, and whenever your habits change, the top of the page shows what the ledger noticed in how you work, with evidence and a trend against the two weeks before. Tips are rules over your own recent sessions, not a fixed list: they appear, change and disappear as your numbers move, and improvements are called out. From the same data it writes a short working-agreement prompt for `CLAUDE.md`, `AGENTS.md` or `GEMINI.md`, regenerated as habits shift. Prompts are read on your machine only to bump counters (opener length, how many follow-ups were corrections, interruptions, context size). The text is never stored or sent. To add a rule, add an entry to `RULES` in `src/habits.js`.
+
+Providers don't publish plan limits as token counts, so where nothing is measured, capacity is an estimate: ten times the monthly fee in API-equivalent dollars, or your best week if that is higher. If you hit limits often, your best week is used as the ceiling. You can set a weekly figure yourself under Advanced. The old dashboard is at `/details.html`.
 
 ## What it reads
 

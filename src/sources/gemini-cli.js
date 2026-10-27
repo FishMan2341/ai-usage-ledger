@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { walk, localDay, num, rollup, emptyRow } from '../util.js';
+import { walk, localDay, localHour, num, rollup, emptyRow } from '../util.js';
 import { categorize, isHumanText } from '../categorize.js';
 
 export const id = 'gemini-cli';
@@ -44,7 +44,7 @@ export async function read({ root = defaultRoot(), billing = 'unknown' } = {}) {
       const cached = num(t.cached);
       rows.push(emptyRow({
         source: id, provider: 'google', app: 'Gemini', billing,
-        day: localDay(m.timestamp || chat.startTime), model, category, project, requests: 1,
+        day: localDay(m.timestamp || chat.startTime), hour: localHour(m.timestamp || chat.startTime), model, category, project, requests: 1,
         input: Math.max(0, num(t.input) - cached), cacheRead: cached,
         output: num(t.output) + num(t.thoughts),
       }));

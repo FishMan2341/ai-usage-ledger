@@ -6,8 +6,10 @@
   <title>AI Usage Ledger</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='9' width='3' height='6' rx='1' fill='%23d97757'/%3E%3Crect x='6' y='5' width='3' height='10' rx='1' fill='%2310a37f'/%3E%3Crect x='11' y='2' width='3' height='13' rx='1' fill='%234285f4'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="home.css">
 </head>
-<body>
+<body class="home">
+  <div class="aurora" aria-hidden="true"></div>
   <header class="top">
     <div class="wrap top-inner">
       <div class="brand">
@@ -15,104 +17,92 @@
         <p class="sub" id="generated">Reading your usage…</p>
       </div>
       <div class="controls">
-        <div class="seg" role="group" aria-label="Date range" id="range">
-          <button type="button" data-days="7">7 days</button>
-          <button type="button" data-days="30">30 days</button>
-          <button type="button" data-days="90">90 days</button>
-          <button type="button" data-days="0">All</button>
-        </div>
+        <a class="btn" href="details.html">Full breakdown &rarr;</a>
         <button type="button" class="btn" id="refresh">Refresh</button>
       </div>
     </div>
   </header>
 
-  <main class="wrap">
-    <p class="takeaway" id="takeaway"></p>
-
-    <section class="kpis" aria-label="Totals">
-      <div class="kpi"><span class="kpi-label">Tokens</span><span class="kpi-value" id="k-tokens">—</span><span class="kpi-note" id="k-tokens-note"></span></div>
-      <div class="kpi"><span class="kpi-label">API-equivalent cost</span><span class="kpi-value" id="k-cost">—</span><span class="kpi-note" id="k-cost-note"></span></div>
-      <div class="kpi"><span class="kpi-label">Actually paid</span><span class="kpi-value" id="k-paid">—</span><span class="kpi-note" id="k-paid-note"></span></div>
-      <div class="kpi"><span class="kpi-label">Energy</span><span class="kpi-value" id="k-energy">—</span><span class="kpi-note" id="k-energy-note"></span></div>
-      <div class="kpi"><span class="kpi-label">Carbon (CO₂e)</span><span class="kpi-value" id="k-co2">—</span><span class="kpi-note" id="k-co2-note"></span></div>
-      <div class="kpi"><span class="kpi-label">Water</span><span class="kpi-value" id="k-water">—</span><span class="kpi-note" id="k-water-note"></span></div>
-    </section>
-
-    <section class="panel" aria-labelledby="sources-h">
-      <div class="panel-head">
-        <h2 id="sources-h">Connected accounts and logs</h2>
-        <p class="note">Turn a source off to leave it out of every figure. Usage pages open in each provider's site.</p>
-      </div>
-      <div class="providers" id="providers"></div>
-      <p class="warn" id="overlap" hidden></p>
-    </section>
-
-    <div class="metric-bar">
-      <span class="note">Show charts by</span>
-      <div class="seg" role="group" aria-label="Chart metric" id="metric">
-        <button type="button" data-metric="tokens">Tokens</button>
-        <button type="button" data-metric="costUsd">Cost</button>
-        <button type="button" data-metric="wh">Energy</button>
-      </div>
-    </div>
-
-    <section class="panel" aria-labelledby="daily-h">
-      <div class="panel-head">
-        <h2 id="daily-h">Daily usage by provider</h2>
-        <p class="note" id="daily-note"></p>
-      </div>
-      <div class="chart" id="daily"></div>
-      <div class="legend" id="daily-legend"></div>
-    </section>
-
-    <div class="grid2">
-      <section class="panel" aria-labelledby="cat-h">
-        <div class="panel-head">
-          <h2 id="cat-h">By category</h2>
-          <p class="note">Sorted from each session's opening request, on this machine. API usage carries no prompt text.</p>
+  <main class="wrap" id="main">
+    <section class="card habits reveal" id="habits" aria-labelledby="habits-h" hidden>
+      <div class="card-head">
+        <div>
+          <p class="eyebrow" id="habits-eyebrow"></p>
+          <h2 id="habits-h">What we noticed in your work</h2>
+          <p class="note" id="habits-note"></p>
         </div>
-        <div id="categories" class="hbars"></div>
-      </section>
-      <section class="panel" aria-labelledby="app-h">
-        <div class="panel-head">
-          <h2 id="app-h">By tool</h2>
-          <p class="note">Where the tokens were spent.</p>
+        <button type="button" class="btn primary" id="habits-ack">Got it</button>
+      </div>
+      <div id="tips" class="tips"></div>
+      <p class="kudos" id="kudos" hidden></p>
+    </section>
+
+    <section class="hero reveal" aria-labelledby="hero-label">
+      <div class="hero-main">
+        <p class="eyebrow" id="hero-label">Unused plan capacity this week</p>
+        <p class="big" id="big" aria-live="polite">$0</p>
+        <p class="hero-sub" id="hero-sub"></p>
+      </div>
+      <div class="rings" id="rings"></div>
+    </section>
+
+    <section class="card reveal" style="--i:1" id="chart-card" aria-labelledby="week-h">
+      <div class="card-head">
+        <div>
+          <h2 id="week-h">Last 7 days</h2>
+          <p class="note" id="week-note"></p>
         </div>
-        <div id="apps" class="hbars"></div>
-      </section>
-    </div>
-
-    <section class="panel" aria-labelledby="model-h">
-      <div class="panel-head">
-        <h2 id="model-h">By model</h2>
-        <p class="note">Cost uses list API prices. <span class="proxy-mark">≈</span> marks a model with no published price, priced like a comparable model.</p>
+        <div class="seg" role="group" aria-label="Chart metric" id="metric">
+          <button type="button" data-metric="costUsd">$</button>
+          <button type="button" data-metric="tokens">Tokens</button>
+        </div>
       </div>
-      <div class="table-wrap"><table id="models" class="data"></table></div>
+      <div class="chart" id="week-chart"></div>
+      <div class="pills" id="week-legend"></div>
     </section>
 
-    <section class="panel" aria-labelledby="proj-h">
-      <div class="panel-head">
-        <h2 id="proj-h">By project</h2>
-        <p class="note">The folder a session ran in, or the API workspace or project.</p>
+    <section class="reveal" style="--i:2" aria-labelledby="rec-h" id="recs-section">
+      <div class="section-head">
+        <h2 id="rec-h">Put it to work</h2>
+        <p class="note" id="rec-note"></p>
       </div>
-      <div class="table-wrap"><table id="projects" class="data"></table></div>
+      <div id="recs" class="recs"></div>
     </section>
 
-    <section class="panel" aria-labelledby="bill-h">
-      <div class="panel-head">
-        <h2 id="bill-h">Billed by your accounts</h2>
-        <p class="note">What the provider's cost report says you were charged, plus the plan fees you listed in ledger.config.json.</p>
+    <section class="card reveal" style="--i:3" id="prompts-card" aria-labelledby="prompts-h" hidden>
+      <div class="card-head">
+        <div>
+          <h2 id="prompts-h">Your working agreement</h2>
+          <p class="note" id="prompts-note"></p>
+        </div>
       </div>
-      <div id="billed"></div>
+      <div id="prompts" class="prompts"></div>
     </section>
 
-    <section class="panel method" aria-labelledby="method-h">
-      <div class="panel-head"><h2 id="method-h">How these numbers are estimated</h2></div>
-      <div class="method-grid" id="method"></div>
+    <section class="card clp reveal" style="--i:4" id="sources-card">
+      <button type="button" class="clp-btn" aria-expanded="false" aria-controls="sources-body">
+        <span class="clp-title">Sources</span><span class="note" id="sources-summary"></span><i class="chev" aria-hidden="true"></i>
+      </button>
+      <div class="clp-body" id="sources-body"><div class="clp-inner">
+        <p class="note">Everything is detected automatically. If something is missing, rescan it, or point us at it.</p>
+        <div id="sources" class="sources"></div>
+        <div class="rec-actions"><button type="button" class="btn small" id="rescan-all">Rescan everything</button><span class="note" id="rescan-status" role="status"></span></div>
+      </div></div>
+    </section>
+
+    <section class="card tune clp reveal" style="--i:5" id="tune">
+      <button type="button" class="clp-btn" aria-expanded="false" aria-controls="tune-body">
+        <span class="clp-title">Tune the estimate</span><span class="note">Optional</span><i class="chev" aria-hidden="true"></i>
+      </button>
+      <div class="clp-body" id="tune-body"><div class="clp-inner">
+        <p class="note">Everything works without this. Answers only sharpen the estimate, and they stay on this machine.</p>
+        <form id="profile" class="profile"></form>
+        <p class="note fine" id="assumptions"></p>
+      </div></div>
     </section>
   </main>
 
   <div class="tip" id="tip" role="tooltip" hidden></div>
-  <script src="app.js"></script>
+  <script src="home.js"></script>
 </body>
 </html>
